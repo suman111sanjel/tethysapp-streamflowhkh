@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% load staticfiles %}
+{% csrf_token %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlow Forecast</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Condensed" rel="stylesheet">
+
+
+    <link href="{% static 'streamflowhkh/css/newcss/Version4bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/glyphicons.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/ol.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/bootstrap-slider.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/threddsDataserverMinified.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/jquery-ui.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/MonthPicker.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/CustomStylesMonthPicker.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'streamflowhkh/css/Content/Site.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/Content/cssPlugin/soil.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'streamflowhkh/css/main.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/layerUIWithSlider.css' %}" rel="stylesheet"/>
+    <link href="{% static 'streamflowhkh/css/newcss/styles.css' %}" rel="stylesheet"/>
+
+</head>
+
+<body>
+<div class="banner">
+    <h3 class="banner-heading">ECMWF Streamflow Prediction Tool - Regional</h3>
+    <div class="logos pull-right">
+        <img src="{% static 'streamflowhkh/css/Content/icons/logo-icimod.png' %}"
+             style="height: 35px;margin-top: 16px;"/>
+    </div>
+</div>
+
+<div class="container-fluid main-container"> <!--has-toolbar -->
+    <div class="row full-height">
+        <!--MIDDLE-->
+        <!-- Map Section -->
+        <div class="col-md-10 full-height">
+            <div id="map-section" class="row full-height">
+                <div class="col-md-12 colpad padtop padbottom" style="padding-right:0;">
+                    <div class="panel" style="height:100%;padding:10px;">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--LAST-->
+        <div class="col-md-2 full-height">
+            <!--Legend section-->
+            <div class="row top-row full-height">
+                <div class="col-md-12 colpad padtop col-mob-off">
+                    <div class="panel" style="height:100%">
+                        <div class="panel-heading padding-top-6">
+                            <h4 class="panel-title full-width layer-heading">
+                                Layers
+                            </h4>
+                        </div>
+                        <div class="layer-div">
+                            <div class="layerCollection"></div>
+                            {#                            <div class="region-selection">#}
+                            {#                                <b>Select District</b>#}
+                            {#                                <br>#}
+                            {#                                <select id="selDistrict" class="form-control form-control-sm" data-width="fit">#}
+                            {#                                    <option value="Babai" selected>Babai</option>#}
+                            {#                                    <option value="Barahtal">Barahtal</option>#}
+                            {#                                    <option value="Dangisharan">Dangisharan</option>#}
+                            {#                                    <option value="Gadhawa">Gadhawa</option>#}
+                            {#                                    <option value="Lamahi">Lamahi</option>#}
+                            {#                                    <option value="dangRajpur">Dang Rajpur</option>#}
+                            {#                                    <option value="rautahatRajpur">Rautahat Rajpur</option>#}
+                            {#                                    <option value="chitawanRapti">Chitawan Rapti</option>#}
+                            {#                                    <option value="dangRapti">Dang Rapti</option>#}
+                            {#                                    <option value="Shantinagar">Shantinagar</option>#}
+                            {#                                    <option value="Tulsipur">Tulsipur</option>#}
+                            {#                                </select>#}
+                            {#                            </div>#}
+                        </div>
+                    </div>
+
+                </div>
+                <!--Information section-->
+            </div>
+
+            <div class="row bot-row">
+                <div class="col-md-12 colpad padtop padbottom ">
+                    <div class="panel" style="height:100%;">
+                        <div class="panel-heading padding-top-6">
+                            <h4 class="panel-title full-width layer-heading">
+                                About Streamflow Prediction
+                                <a href="#"><img
+                                        src="{% static 'streamflowhkh/css/Content/icons/app_icon_about.png' %}"
+                                        style="float:right;height:20px;width:auto;" data-toggle="modal"
+                                        data-target="#aboutModal"></a>
+                            </h4>
+                        </div>
+                        <div class="panel-body" style="height:calc(100% -  40px);overflow:auto;">
+                            <div style="text-align:justify;">
+                                <b>Description:</b><br>
+                                The Streamflow prediction application is the collection of river network created
+                                within
+                                specific countries which has the unique ID which then is connected to the database
+                                to
+                                have the 48-hours forecast. The user can interact by clicking this river network.
+                                This
+                                application can be a part of a DSS tool for flood forecasting and give an early
+                                warning
+                                system to the user.
+                            </div>
+                            <div class="form-group" style="margin-top:5px;">
+                                <a href="#" data-toggle="modal" data-target="#aboutModal"><span
+                                        style="font-weight:bold;">View More...</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="aboutModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Streamflow Prediction</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="contributor">
+                        <img src="{% static 'streamflowhkh/css/Content/images/USAIDlogo.png' %}">
+                        <img src="{% static 'streamflowhkh/css/Content/images/NASA_LOGO.png' %}" style="height:50px;">
+                        <img src="{% static 'streamflowhkh/css/Content/images/icimod.png' %}"
+                             style="height:54px;margin-top:10px;">
+                        <img src="{% static 'streamflowhkh/css/Content/images/Servir_HKH green.png' %}"
+                             style="height:30px;">
+                    </div>
+                    <div class="other-detail">
+                        <div style="overflow:auto;height:100%;">
+                            <h5><b class="info">Description</b></h5>
+                            <p class="info">
+                                The Streamflow prediction application is the collection of river network created within
+                                specific
+                                countries which has the unique ID
+                                which then is connected to the database to have the 48-hours forecast. The user can
+                                interact
+                                by
+                                clicking this river network.
+                                This application can be a part of a DSS tool for flood forecasting and give an early
+                                warning
+                                system to the user.
+                            </p>
+                            <h5><b class="info">Data /methodology/platform</b></h5>
+                            <p class="info">
+                                The Streamflow Prediction Tool provides 48-hours streamflow predicted estimates by using
+                                the
+                                High-Impact Weather Assesment Toolkit (HIWAT)
+                                runoff predictions routed with the RAPID program. The application displays only results
+                                from
+                                rivers that are not transboundary. The app
+                                also provides historical data, and the ability to download the forecast and historical
+                                data.
+                            </p>
+                            <p class="info">
+                                On the other hand Tethys platform is the open-source web-GIS suit developed by Brigham
+                                Young
+                                University (BYU). Tethys comes with few widely used GIS technologies like GeoServer and
+                                PostGIS
+                                and is developed in the python Django environment.
+                            </p>
+                            <h5><b class="info">Analytical tools</b></h5>
+                            <p class="info">
+                                The Streamflow prediction application provides the forecast data where, the user can
+                                interact
+                                with the application on following ways:
+                            </p>
+                            <ul>
+
+                                <li class="info">Upon clicking any river line, a user can view the forecast data with
+                                    following parameters
+                                </li>
+                                <ul>
+                                    <li class="info">High-Resolution forecast (10 days)</li>
+                                    <li class="info">Standard Deviation, Mean, Maximum and Minimum forecast (generated
+                                        with 52 ensemble forecasts)
+                                    </li>
+                                    <li class="info">Information on two, ten and twenty years return period.</li>
+                                </ul>
+                                <li class="info">View the historical dataset from 1980.</li>
+                                <li class="info">A chart of flow-duration</li>
+                                <ul>
+                                    <li class="info">Forecast data</li>
+                                    <li class="info">Interim Data</li>
+                                </ul>
+
+
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Chart Modal -->
+
+    <div class="modal fade" id="graph" tabindex="-1" role="dialog" aria-labelledby="about-modal-label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document" style="width:75%;">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    {#                    <h5 class="modal-title" id="about-modal-label">Modal title</h5>#}
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <nav>
+                        <div class="nav nav-tabs" id="graphTab" role="tablist">
+                            <a class="nav-item nav-link active" id="forecast_tab_link" data-toggle="tab"
+                               href="#nav-home"
+                               role="tab" aria-controls="nav-home" aria-selected="true">Forecast</a>
+                            {#                            <a class="nav-item nav-link" id="historical_tab_link" data-toggle="tab" href="#nav-profile"#}
+                            {#                               role="tab" aria-controls="nav-profile" aria-selected="false">Historical</a>                            #}
+                            {#                                                        <a class="nav-item nav-link" id="flow_duration_tab_link" data-toggle="tab" href="#flow_duration_tab"#}
+                            {#                                                           role="tab" aria-controls="flow_duration_tab" aria-selected="false">Flow-Duration</a>#}
+                            <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact"
+                               role="tab" aria-controls="nav-contact" aria-selected="false">Downloads</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                             aria-labelledby="forecast_tab_link">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div class="flex-container-row"><img id="view-file-loading" class="view-file hidden"
+                                                                         src="{% static base_name|add:'/images/loader.gif' %}"/>
+                                    </div>
+                                    <div id="long-term-chart">
+
+                                    </div>
+                                    <table id="mytable">
+                                        <tbody id="tbody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel"
+                             aria-labelledby="historical_tab_link">
+                            <div class="panel panel-default">
+                                <div class="flex-container-row"><img id="his-view-file-loading" class="view-file hidden"
+                                                                     src="{% static base_name|add:'/images/loader.gif' %}"/>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="historical-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="flow_duration_tab" role="tabpanel"
+                             aria-labelledby="flow_duration_tab_link">
+                            <div class="panel panel-default">
+                                <div class="flex-container-row"><img id="his-view-file-loading" class="view-file hidden"
+                                                                     src="{% static base_name|add:'/images/loader.gif' %}"/>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="fdc-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <h6>Download Forecast Data (Time Zone: UTC)</h6>
+                                    <div id="download_forecast" class="btn-group long-term-select" role="group">
+                                        <a class="btn btn-success" role="button" id="submit-download-forecast">
+                                            <span class="glyphicon glyphicon-play"></span> Download Forecast
+                                        </a>
+                                    </div>
+                                    <h6>Download ERA Interim Data (Time Zone: UTC)</h6>
+                                    <div id="download_interim" class="btn-group" role="group">
+                                        <a class="btn btn-info" role="button" id="submit-download-interim-csv">
+                                            <span class="glyphicon glyphicon-play"></span> Download Interim Data
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="info" class="hidden"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{##}
+{#<script src="{% static 'streamflowhkh/js/ForBootstrapjquery-3.5.1.slim.min.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/jquery-3.3.1.min.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/ForBootstrapPopper.min.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/Version4bootstrap.min.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/bootstrap-slider.min.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/ol.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/iso8601.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/plotly-latest.min.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/jquery-ui.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/jquery.maskedinput.min.js' %}"></script>#}
+{#<script src="{% static 'streamflowhkh/js/MonthPicker.min.js' %}"></script>#}
+
+
+<script src="{% static 'streamflowhkh/js/ForBootstrapjquery-3.5.1.slim.min.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/ForBootstrapPopper.min.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/Version4bootstrap.min.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/bootstrap-slider.min.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/ol.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/iso8601.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/timeDimensionThreddsDataServer.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/plotly-latest.min.js' %}"></script>
+
+{#<script>#}
+{#    var ThreddsDataURL = {{ thredds_urls|safe }};#}
+{#</script>#}
+
+<script src="{% static 'streamflowhkh/js/data.js' %}"></script>
+<script src="{% static 'streamflowhkh/js/main.js' %}"></script>
+
+</body>
+</html>
+

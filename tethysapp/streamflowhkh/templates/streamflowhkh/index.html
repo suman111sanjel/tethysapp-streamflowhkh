@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% csrf_token %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" contant="width-device-width, initial-scale=1" />
+    <title>My Map</title>
+     <!--Leaflet -->
+    <link href="{% static 'streamflowhkh/css/leaflet.css' %}" rel="stylesheet"/>
+    <script src="{% static 'streamflowhkh/js/leaflet.js' %}" type="text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src=" {% static 'streamflowhkh/js/ajaxies.js' %}"></script>
+    <style type="text/css">
+        #map{height: 500px;}
+        .legend{background: white; line-height: 1.5em}
+        .legend i {width: 1em; float: left}
+    </style>
+
+</head>
+<body>
+<h1>MY Map</h1>
+
+<div id="map"></div>
+<script>
+    var ecmwf = {{ myJson|safe }};
+
+    function getRisk(risk){
+        if(risk == 4){
+            return 'red'
+        }
+        if(risk == 3){
+            return 'orange'
+        }
+        if(risk == 2){
+            return 'yellow'
+        }
+        else{
+            return 'blue'
+        }
+    }
+    function ecmwfStyle(feature){
+        if (feature.properties.risk < 1){
+            return{
+            weight: 5,
+            opacity: 1,
+            color:  getRisk(feature.properties.risk),
+            fillOpacity:1
+            }
+        }
+        else {
+            return{
+            weight: 10,
+            opacity: 1,
+            color:  getRisk(feature.properties.risk),
+            fillOpacity:1
+            }
+        }
+    }
+    var map = L.map('map').setView([27.732160709580906,85.341796875],7);
+    var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        opacity: 0.5, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+    var ecmwfLayer = L.geoJson(ecmwf,
+        {style: ecmwfStyle,
+        onEachFeature: function(feature, layer) {
+            if (feature.properties && feature.properties.comid) {
+                layer.on('click', function (e) {
+                    $.ajax({
+                        type:"GET",
+                        data: {
+                            "stID": feature.properties.comid,
+                        },
+                        url:"chart",
+                        dataType: 'json',
+                        "beforeSend": function(xhr, settings) {
+                            console.log("Before Send");
+                            $.ajaxSettings.beforeSend(xhr, settings);
+                        },
+                        "success": function () {
+                            alert("success");
+                        }
+                    })
+                });  //Layer on click
+            }
+        }
+        }).addTo(map);
+    map.fitBounds(ecmwfLayer.getBounds());
+    var legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div','legend');
+        var labels =["Twenty Year Return Period ","Ten Year Return Period ","Two Year Return Period ","Normal Drainage"];
+        var grades = [4,3,2,1];
+        div.innerHTML='<div><b>Legend</b></div>';
+        for (var i=0; i < grades.length; i++){
+            div.innerHTML += '<i style="background:' + getRisk(grades[i]) + '">&nbsp;&nbsp;</i>&nbsp;&nbsp;' + labels[i] + '<br/>';
+        }
+        return div;
+    }
+    legend.addTo(map);
+</script>
+</body>
+</html>

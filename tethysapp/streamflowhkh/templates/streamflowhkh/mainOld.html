@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% load staticfiles %}
+{% csrf_token %}
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>StreamFlow Forecast</title>
+
+		 <!--Leaflet -->
+		<link href="{% static 'streamflowhkh/css/leaflet.css' %}" rel="stylesheet"/>
+		<link href="{% static 'streamflowhkh/css/main.css' %}" rel="stylesheet"/>
+		<script src="{% static 'streamflowhkh/js/leaflet.js' %}" type="text/javascript"></script>
+		<script src="{% static 'streamflowhkh/js/getTable.js' %}" type="text/javascript"></script>
+
+		<script src="{% static 'streamflowhkh/js/Scripts/jquery-3.3.1.js' %}" type="text/javascript"></script>
+		<script src="{% static 'streamflowhkh/js/Scripts/bootstrap.js' %}" type="text/javascript"></script>
+		<script src="{% static 'streamflowhkh/js/ajaxies.js' %}"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Condensed" rel="stylesheet">
+		<script src="{% static 'streamflowhkh/js/Scripts/modernizr-2.8.3.js' %}" type="text/javascript"></script>
+		<link href="{% static 'streamflowhkh/css/Content/bootstrap.css' %}" rel="stylesheet"/>
+		<link href="{% static 'streamflowhkh/css/Content/Site.css' %}" rel="stylesheet"/>
+		<link href="{% static 'streamflowhkh/css/Content/cssPlugin/soil.css' %}" rel="stylesheet"/>
+	</head>
+
+	<body>
+		<div class="banner">
+			<h3 class="banner-heading">Streamflow Prediction System (HIWAT-NEPAL)</h3>
+			<div class="logos pull-right">
+				<img src="{% static 'streamflowhkh/css/Content/icons/logo-icimod.png' %}" style="height: 35px;margin-top: 10px;"/>
+			</div>
+		</div>
+
+	<div class="container-fluid main-container"> <!--has-toolbar -->
+		<div class="row full-height">
+			<!--MIDDLE-->
+			<!-- Map Section -->
+			<div class="col-md-10 full-height" >
+				<div id="map-section" class="row full-height">
+					<div class="col-md-12 colpad padtop padbottom" style="padding-right:0;">
+						<div class="panel" style="height:100%;padding:10px;">
+							<div id="map"> </div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--LAST-->
+			<div class="col-md-2 full-height">
+				<!--Legend section-->
+				<div class="row top-row full-height">
+					<div class="col-md-12 colpad padtop col-mob-off">
+						<div class="panel " style="height:100%">
+							<ul class="nav nav-tabs panel-heading">
+								<li class="panel-title active"><a data-toggle="tab" href="#layerTab">Base Layers</a></li>
+								<li class="panel-title"><a data-toggle="tab" href="#legendTab">Legend</a></li>
+							</ul>
+
+							<div class="tab-content" style="overflow:auto; height: calc(100% - 50px);">
+
+								<div id="layerTab" class="tab-pane fade active in">
+									<div id="layerDiv" style="padding:10px">
+										<ul id="layerControl" class="layerControl">
+                                            <li><input id="chkoutline" type="checkbox" value="outline" checked=""><label for="chkoutline">Outline</label></li>
+                                            <li><input id="chksub_basin" type="checkbox" value="sub_basin"><label for="chksub_basin">Province</label></li>
+                                            <li><input id="chkbasin" type="checkbox" value="basin"><label for="chkbasin">District</label></li>
+                                        </ul>
+									</div>
+								</div>
+								<div id="legendTab" class="tab-pane fade">
+									<div id="legendDiv" class="legendcontainer" style="padding:10px">
+										<ul id="legendControl" class="legendControl"><div class="legendGroup"><span>Outline</span><li><img src="http://geoapps.icimod.org/icimodarcgis/rest/services/HKHClimHydro/BasinModel/MapServer/0/images/dc7586f164637e5a127f65d9ceedfa90"><label></label></li></div><div style="display:none" class="legendGroup"><span>Basin</span><li><img src="http://geoapps.icimod.org/icimodarcgis/rest/services/HKHClimHydro/BasinModel/MapServer/1/images/9232d28acae7dcca939dcdb73c162e13"><label></label></li></div><div style="display:none" class="legendGroup"><span>Sub Basin</span><li><img src="http://geoapps.icimod.org/icimodarcgis/rest/services/HKHClimHydro/BasinModel/MapServer/2/images/31322e6d0c1bb43609e68a1a5f004b4f"><label></label></li></div></ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!--Information section-->
+				<div class="row bot-row">
+					<div class="col-md-12 colpad padtop padbottom ">
+						<div class="panel" style="height:100%;">
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									About Streamflow Prediction
+									<a href="#"><img src="{% static 'streamflowhkh/css/Content/icons/app_icon_about.png' %}" style="float:right;height:20px;width:auto;" data-toggle="modal" data-target="#aboutModal"></a>
+								</h4>
+							</div>
+							<div class="panel-body" style="height:calc(100% -  40px);overflow:auto;">
+								<div style="text-align:justify;">
+									<b>Description:</b><br>
+									The Streamflow prediction application is the collection of river network created within specific countries which has the unique ID which then is connected to the database to have the 48-hours forecast. The user can interact by clicking this river network. This application can be a part of a DSS tool for flood forecasting and give an early warning system to the user.
+								</div>
+								<div class="form-group" style="margin-top:5px;">
+									<a href="#" data-toggle="modal" data-target="#aboutModal"><span style="font-weight:bold;">View More...</span></a>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow: hidden;">
+		<div class="modal-dialog" role="document" style="height:calc(100% - 100px);top:10px;">
+			<div class="modal-content" style="height:100%;">
+				<div class="modal-header">
+					<h4 class="modal-title" id="exampleModalLabel">Streamflow Prediction</h4>
+				</div>
+				<div class="modal-body" style="height:calc(100% - 100px);">
+
+					<div class="contributor">
+                        <img src="{% static 'streamflowhkh/css/Content/images/USAIDlogo.png' %}">
+                        <img src="{% static 'streamflowhkh/css/Content/images/NASA_LOGO.png' %}" style="height:50px;">
+                        <img src="{% static 'streamflowhkh/css/Content/images/icimod.png' %}" style="height:30px;margin-top:10px;">
+                        <img src="{% static 'streamflowhkh/css/Content/images/Servir_HKH green.png' %}" style="height:30px;">
+                    </div>
+
+					<div style="overflow:auto;height:calc(100% - 80px);padding:6px;">
+                        <h5><b class="info">Description</b></h5>
+                        <p class="info">
+                        The Streamflow prediction application is the collection of river network created within specific countries which has the unique ID
+                            which then is connected to the database to have the 48-hours forecast. The user can interact by clicking this river network.
+                            This application can be a part of a DSS tool for flood forecasting and give an early warning system to the user.
+                        </pinfo>
+                        <h5><b class="info">Data /methodology/platform</b></h5>
+                        <p class="info">
+                        The Streamflow Prediction Tool provides 48-hours streamflow predicted estimates by using the  High-Impact Weather Assesment Toolkit (HIWAT)
+                            runoff predictions routed with the RAPID program.  The application displays only results from rivers that are not transboundary. The app
+                            also provides historical data, and the ability to download the forecast and historical data.
+                        </p>
+                        <p class="info">
+                        On the other hand Tethys platform is the open-source web-GIS suit developed by Brigham Young University (BYU).  Tethys comes with few widely used GIS technologies like GeoServer and PostGIS and is developed in the python Django environment.
+                        </p>
+                        <h5><b class="info">Analytical tools</b></h5>
+                        <p class="info">
+                        The Streamflow prediction application provides the forecast data where, the user can interact with the application on following ways:
+                        </p>
+                        <ul>
+                            <li class="info">Upon clicking any river line, a user can view the forecast data for next 48-hours.</li>
+                            <li class="info">View the historical dataset from 1980.</li>
+                            <!--<li class="info">Download the dataset</li>-->
+                            <ul>
+                                <li class="info">Forecast data</li>
+                                <li class="info">Interim Data</li>
+                            </ul>
+                        </ul>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-custom btn-sm" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+    <!-- Chart Modal -->
+    <div class="modal fade" id="graph" tabindex="-1" role="dialog" aria-labelledby="about-modal-label">
+      <div class="modal-dialog" role="document" style="width:75%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="row">
+              <!--<div id="watershed-info" class="col-md-12"></div>-->
+              <div class="col-md-12">
+                <!--<div align="right">-->
+				  <!--<img class="logos" src="{% static 'streamflowhkh/css/Content/icons/logo-icimod.png' %}" height="100px"/>-->
+                <!--</div>-->
+              </div>
+            </div>
+            <div id="interaction"></div>
+          </div>
+          <div class="modal-body">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist" id="graphTab">
+              <li role="presentation" class="active"><a id="forecast_tab_link" href="#forecast_tab" aria-controls="forecast_tab" role="tab" data-toggle="tab">Forecast</a></li>
+              <li role="presentation"><a id="historical_tab_link" href="#historical" aria-controls="historical" role="tab" data-toggle="tab">Historical</a></li>
+              <!--<li role="presentation"><a id="flow_duration_tab_link" href="#flow_duration" aria-controls="flow_duration" role="tab" data-toggle="tab">Flow-Duration</a></li>-->
+              <!--<li role="presentation"><a href="#download" aria-controls="download" role="tab" data-toggle="tab">Download</a></li>-->
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="forecast_tab">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+
+                    <div class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="{% static base_name|add:'/images/loader.gif' %}" /></div>
+                    <div id="long-term-chart">
+
+                    </div>
+                    <table id="mytable">
+                      <tbody id="tbody">
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div> <!-- /.tab-pane -->
+              <div role="tabpanel" class="tab-pane" id="historical">
+                <div class="panel panel-default">
+                  <div class="flex-container-row"><img id="his-view-file-loading" class="view-file hidden" src="{% static base_name|add:'/images/loader.gif' %}" /></div>
+                  <div class="panel-body">
+                      <div id="historical-chart" ></div>
+                  </div>
+                </div>
+              </div><!-- /.tab-pane -->
+              <div role="tabpanel" class="tab-pane" id="flow_duration">
+                <div class="panel panel-default">
+                  <div class="flex-container-row"><img id="fdc-view-file-loading" class="view-file hidden" src="{% static base_name|add:'/images/loader.gif' %}" /></div>
+                  <div id='fdc-chart' class="panel-body"></div>
+                </div>
+              </div><!-- /.tab-pane -->
+              <div role="tabpanel" class="tab-pane" id="download">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <h6>Download Forecast Data</h6>
+                    <div id="download_forecast" class="btn-group hidden long-term-select" role="group">
+                      <a class="btn btn-success" role="button" id="submit-download-forecast">
+                        <span class="glyphicon glyphicon-play"></span> Download Forecast
+                      </a>
+                    </div>
+                    <h6>Download ERA Interim Data</h6>
+                    <div id="download_interim" class="btn-group hidden" role="group">
+                      <a class="btn btn-info" role="button" id="submit-download-interim-csv">
+                        <span class="glyphicon glyphicon-play"></span> Download Interim Data
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="info" class="hidden"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script>
+			$(document).ready(function () {
+			    var ecmwfData = {{ myJson|safe }};
+			function getRisk(risk){
+				if(risk == 4){
+					return 'red'
+				}
+				if(risk == 3){
+					return 'orange'
+				}
+				if(risk == 2){
+					return 'yellow'
+				}
+				else{
+					return 'blue'
+				}
+			}
+			function ecmwfStyle(feature){
+				if (feature.properties.risk < 1){
+					return{
+					weight: 2,
+					opacity: 1,
+					color:  getRisk(feature.properties.risk),
+					fillOpacity:1
+					}
+				}
+				else {
+					return{
+					weight: 5,
+					opacity: 1,
+					color:  getRisk(feature.properties.risk),
+					fillOpacity:1
+					}
+				}
+			}
+			var map = L.map('map').setView([27.732160709580906,85.341796875],7);
+			var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				opacity: 0.5, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+				}).addTo(map);
+
+            var ecmwfAdmin = new L.tileLayer.wms('http://tethys.icimod.org:8181/geoserver/ows',{
+			    layers:'nepal:nationalBoundary',
+                format:'image/png',
+                transparent: true
+            }).addTo(map);
+
+            var ecmwfDist = new L.tileLayer.wms('http://tethys.icimod.org:8181/geoserver/ows',{
+			    layers:'CRFMS:districtsNepal',
+                format:'image/png',
+                transparent: true
+            });
+
+            var ecmwfProv = new L.tileLayer.wms('http://tethys.icimod.org:8181/geoserver/ows',{
+			    layers:'CRFMS:provinceNepal',
+                format:'image/png',
+                transparent: true
+            });
+
+            // ecmwfWMS.on("click", function (event){
+			 //    alert("me clicked");
+            // }
+            $('#chkoutline').change(function(){
+                if($(this).is(':checked'))
+                    map.addLayer(ecmwfAdmin);
+
+                else
+                    map.removeLayer(ecmwfAdmin);
+            })
+
+            $('#chkbasin').change(function(){
+                if($(this).is(':checked'))
+                    map.addLayer(ecmwfDist);
+
+                else
+                    map.removeLayer(ecmwfDist);
+            })
+            $('#chksub_basin').change(function(){
+                if($(this).is(':checked'))
+                    map.addLayer(ecmwfProv);
+
+                else
+                    map.removeLayer(ecmwfProv);
+            })
+
+
+			var ecmwfLayer = L.geoJson(ecmwfData,
+				{style: ecmwfStyle,
+				onEachFeature: function(feature, layer) {
+					if (feature.properties && feature.properties.comid) {
+						layer.on('click', function (e) {
+						    $.ajax({
+								type:"GET",
+								data: {
+									"stID": feature.properties.comid,
+								},
+								url:"chartHiwat",
+								dataType: 'json',
+								"beforeSend": function(xhr, settings) {
+									console.log("Before Send");
+									$.ajaxSettings.beforeSend(xhr, settings);
+								},
+								"success": function (data) {
+ 									$('#long-term-chart').empty();
+                                    $('#historical-chart').empty();
+                                    $('#fdc-chart').empty();
+								    json_response = data;
+								    var dates = [];
+                					var values = [];
+                                    // var hres_dates = [];
+                                    // var hres_values = [];
+                                    // var min_values = [];
+                                    // var max_values = [];
+                                    // var std_dev_lower_values = [];
+                                    // var std_dev_upper_values = [];
+                                    //
+                                    // var sorted_daily_avg = [];
+                                    // var prob = [];
+                                    //
+                                    var hdate= []
+                                    var hval = []
+
+									// get_forecast_percent(feature.properties.comid);
+
+									if (json_response.success == "success")
+                						{
+                						    json_response.dates.forEach(function (element) {
+											    dates.push(element);
+											});
+											for (i in json_response.values) {
+												values.push(parseFloat(json_response.values[i]));
+											}
+											// for (i in json_response.hres_dates) {
+											// 	hres_dates.push(json_response.hres_dates[i]);
+											// }
+											// for (i in json_response.hres_values) {
+											// 	hres_values.push(parseFloat(json_response.hres_values[i]));
+											// }
+											// for (i in json_response.min_values) {
+											// 	min_values.push(parseFloat(json_response.min_values[i]));
+											// }
+											// for (i in json_response.max_values) {
+											// 	max_values.push(parseFloat(json_response.max_values[i]));
+											// }
+											// for (i in json_response.std_dev_lower_values) {
+											// 	std_dev_lower_values.push(parseFloat(json_response.std_dev_lower_values[i]));
+											// }
+											// for (i in json_response.std_dev_upper_values) {
+											// 	std_dev_upper_values.push(parseFloat(json_response.std_dev_upper_values[i]));
+											// }
+											for (i in json_response.hval) {
+												hval.push(parseFloat(json_response.hval[i]));
+											}
+											for (i in json_response.hdate) {
+												hdate.push(json_response.hdate[i]);
+											}
+                                            //
+											// for (i in json_response.prob) {
+											// 	prob.push(json_response.prob[i]);
+											// }
+											// for (i in json_response.sorted_daily_avg) {
+											// 	sorted_daily_avg.push(json_response.sorted_daily_avg[i]);
+											// }
+										}
+									var avg_series = {
+									    	name:'Forecast Values',
+											x: dates,
+											y: values,
+											type: 'scatter',
+											line: {
+											  color: 'blue',
+											  width: 2
+											}
+										};
+									var layout1 = {
+									  title: 'Forecast',
+                                      autosize:true,
+									  xaxis: {
+									      title : 'Dates',
+										},
+									  yaxis: {
+									      title : 'Streamflow',
+										  range: [ 0,  json_response.range]
+										},
+									};
+									var data = [avg_series];
+
+                                    var hplot_series={
+									    name:'ERA_Interim',
+                                        x:hdate,
+                                        y:hval,
+                                        type: 'scatter'
+                                        };
+                                    //
+                                    // // Annotation variables
+                                    var anMax = "Max: "+ Math.round(json_response.return_max * 100) / 100;
+                                    var an20 = "20-yr: "+ Math.round(json_response.return_20 * 100) / 100;
+                                    var an10 = "10-yr: "+ Math.round(json_response.return_10 * 100) / 100;
+                                    var an2 = "2-yr: "+ Math.round(json_response.return_max * 100) / 100;
+                                    var anX = json_response.datetime_end;
+                                    //
+                                    var annotation_series={
+                                        x: [anX,anX,anX,anX],
+										y: [json_response.return_max, json_response.return_20, json_response.return_10, json_response.return_2],
+										text: [anMax, an20, an10, an2],
+										mode: 'text',
+										textposition: 'right',
+                                    };
+                                    //
+                                    var layout2={
+									    title: "Historical Streamflow",
+                                        autoSize: true,
+										showlegend: false,
+										shapes:[{
+                                            type: 'rect',
+                                            xref: 'x',
+                                            yref: 'y',
+                                            x0: json_response.datetime_start,
+                                            y0: json_response.return_20,
+                                            x1: json_response.datetime_end,
+                                            y1: json_response.return_max,
+                                            line: {
+                                                width: 0
+                                            },
+                                            fillcolor: 'rgba(128, 0, 128, 0.4)'
+                                        },
+										{
+                                            type: 'rect',
+                                            xref: 'x',
+                                            yref: 'y',
+                                            x0: json_response.datetime_start,
+                                            y0: json_response.return_10,
+                                            x1: json_response.datetime_end,
+                                            y1: json_response.return_20,
+                                            line: {
+                                                width: 0
+                                            },
+                                            fillcolor: 'rgba(255, 0, 0, 0.4)'
+                                        },
+										{
+                                            type: 'rect',
+                                            xref: 'x',
+                                            yref: 'y',
+                                            x0: json_response.datetime_start,
+                                            y0: json_response.return_2,
+                                            x1: json_response.datetime_end,
+                                            y1: json_response.return_10,
+                                            line: {
+                                                width: 0
+                                            },
+                                            fillcolor: 'rgba(255, 255, 0, 0.4)'
+                                        },],
+                                        xaxis: {
+									        title: 'Dates',
+                                        },
+                                        yaxis: {
+									        title: 'Streamflow'
+                                        }
+                                    };
+                                    var hdata = [hplot_series,annotation_series];
+
+                                    $('#graph').on('shown.bs.modal',function(){
+									    Plotly.newPlot('long-term-chart', data, layout1);
+									    Plotly.newPlot('historical-chart', hdata, layout2);
+									    // Plotly.newPlot('fdc-chart', fdata, layout3);
+                                     });
+                                    $('#graphTab a').on('shown.bs.tab',function(e){
+                                        var id=$(this).attr('id');
+
+                                        if(id=='forecast_tab_link'){
+                                             Plotly.newPlot('long-term-chart', data, layout1);
+										}
+										else if(id == 'historical_tab_link'){
+                                            Plotly.newPlot('historical-chart', hdata, layout2);
+										}
+										else if(id == 'flow_duration_tab_link'){
+                                            Plotly.newPlot('fdc-chart', fdata, layout3);
+										}
+                                    })
+                                    // $('#historical_tab_link').click(function () {
+                                    //     Plotly.newPlot('historical-chart', hdata, layout2);
+                                    // })
+                                    //
+                                    $('#graph').modal('show');
+
+								},
+                                "error": function(data) {
+                                  alert("Return Error: " + data.status);
+                                  alert(data.responseJSON.error);
+                                }
+							})
+						});  //Layer on click
+					}
+				}
+				}).addTo(map);
+
+			map.fitBounds(ecmwfLayer.getBounds());
+			var legend = L.control({position: 'bottomleft'});
+			legend.onAdd = function (map) {
+				var div = L.DomUtil.create('div','legend');
+				var labels =["Twenty Year Return Period ","Ten Year Return Period ","Two Year Return Period ","Normal Drainage"];
+				var grades = [4,3,2,1];
+				div.innerHTML='<div><b>Legend</b></div>';
+				for (var i=0; i < grades.length; i++){
+					div.innerHTML += '<i style="background:' + getRisk(grades[i]) + '">&nbsp;&nbsp;</i>&nbsp;&nbsp;' + labels[i] + '<br/>';
+				}
+				return div;
+			}
+    		legend.addTo(map);
+			})
+		</script>
+	</body>
+</html>
